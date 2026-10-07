@@ -1,0 +1,30 @@
+name: deploy
+on: [push, workflow_dispatch]
+permissions:
+  pages: write
+  id-token: write
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir site
+          cp index.html model.meta.json scene_extra.json site/
+          cd site
+          curl -fL "https://drive.usercontent.google.com/download?id=1FQ5BkjsUuhg1IzVfSkFnr1Af3LTPN3WJ&export=download&confirm=t" -o model-b6735bbe.p0.wasm
+          curl -fL "https://drive.usercontent.google.com/download?id=1aE1_9mG2GuAcFidt7hydJYwRZvfTxgrs&export=download&confirm=t" -o model-b6735bbe.p1.wasm
+          curl -fL "https://drive.usercontent.google.com/download?id=1PKOD_IAddBpyt8fpKHb41Oi25Y-59oCd&export=download&confirm=t" -o model-b6735bbe.p2.wasm
+          curl -fL "https://drive.usercontent.google.com/download?id=16S90udt0ONm88Z0vfFVsYpAlUyb1vrJ-&export=download&confirm=t" -o model-b6735bbe.p3.wasm
+          touch .nojekyll
+          ls -la
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
